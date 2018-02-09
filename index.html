@@ -6,11 +6,24 @@
 </head>
 <body>
 <div class="wrapper">
-    <div class="row">
+    <div id="add-row" class="add block" onclick="add(true)">
+        <span class="plus"></span>
+    </div>
+    <div id="add-col" class="add block" onclick="add(false)">
+      <span class="plus"></span>
+    </div>
+     <div id="rem-row" class="remove block" onclick="remove(true)">
+     <span class="minus"></span>
+    </div>
+    <div id="rem-col" class="remove block" onclick="remove(false)">
+      <span class="minus"></span>
+    </div>
+  <div class="row">
       <div class="block"></div>
       <div class="block"></div>
       <div class="block"></div>
       <div class="block"></div>
+
     </div>
     <div class="row">
       <div class="block"></div>
@@ -33,12 +46,7 @@
 
 </div>
 
-<div class="remove block" onclick="removeCol()">
-  <span class="minus"></span>
-</div>
-<div class="add block" onclick="addCol()">
-  <span class="plus"></span>
-</div>
+
 <script src="./main.js"></script>
 </body>
 </html>

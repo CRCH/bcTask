@@ -47,7 +47,6 @@ html{
 }
 
 .add{
-    left:110px;
     position: absolute;
     background-color:  #f1a417;
 }
@@ -65,3 +64,14 @@ html{
 .plus{
     background-position-x: 0px;
 }
+
+#add-col{
+    right:-104px;
+}
+#add-row{
+    bottom: -104px;
+}
+#rem-col{
+    opacity: 0;
+}
+#rem-row{opacity: 0;}
