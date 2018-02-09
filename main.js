@@ -16,9 +16,9 @@ function addEvent(obj) {
     obj.addEventListener("mouseover",function () {
 
         if (colCount > 1) {
-        remCol.classList.toggle('hidden');
-        remCol.style.display = "block";
-        remCol.style.left = this.offsetLeft - 1 + "px";
+            remCol.classList.toggle('hidden');
+            remCol.style.display = "block";
+            remCol.style.left = this.offsetLeft - 1 + "px";
         }
         if(rowCount>1) {
             remRow.classList.toggle('hidden');
@@ -35,6 +35,7 @@ function addEvent(obj) {
     });
     return obj;
 }
+
 //functions depending on argument adding/removing row/column
 function add(trig) {
     if(trig){
@@ -59,13 +60,20 @@ function addRow() {
     wrapper.appendChild(newRow);
 
 }
+
+function removeRow() {
+    rowCount--;
+    var row = Math.round(remRow.offsetTop/102);
+    var rows = document.querySelectorAll('.row');
+    rows[row].remove();
+    remRow.style.display = "none";
+}
+
 function addCol() {
     colCount++;
     var rows = document.querySelectorAll('.row');
     for(var i = 0; i < rows.length; i++)
         rows[i].appendChild(addEvent(document.querySelector('.row .block').cloneNode()));
-
-
 }
 
 function removeCol() {
@@ -74,11 +82,4 @@ function removeCol() {
     var rows = document.querySelectorAll('.row');
     rows.forEach(function (t) { t.children[col].remove(); });
     remCol.style.display = "none";
-}
-function removeRow() {
-    rowCount--;
-    var row = Math.round(remRow.offsetTop/102);
-    var rows = document.querySelectorAll('.row');
-    rows[row].remove();
-    remRow.style.display = "none";
 }
