@@ -1,25 +1,67 @@
-
+html{
+    min-width: 1000px;
+}
 .wrapper{
-  position: relative;
-  top:200px;
-  left: 200px;
-  border: 1px #4dabe4 solid;
-  padding: 1px;
 
-
+    position: absolute;
+    border: 1px #4dabe4 solid;
+    padding: 1px;
+    left:200px;
+    top:200px;
 
 }
+
 .row{
-padding: 0;
-font-size: 0;
-display: block;
+    padding: 0;
+    font-size: 0;
+    display: flex;
 
 }
-.block{
-  margin: 1px;
-  height: 100px;
-  width: 100px;
-  display: inline-block;
-  background-color: #4dabe4;
 
+.block{
+
+    margin: 1px;
+    height: 100px;
+    width: 100px;
+    display: inline-block;
+    background-color: #4dabe4;
+   
+    }
+.block span{
+
+    display: block;
+    margin:40px auto;
+    height: 20px;
+    width:20px;
+    background-image: url(./bBgSprite.png);
+    background-repeat:no-repeat;
+}
+
+.remove{
+    position: absolute;
+    background-color: #b00100;
+}
+
+.remove:hover{
+    background-color: #c84d4c;
+}
+
+.add{
+    left:110px;
+    position: absolute;
+    background-color:  #f1a417;
+}
+.add:hover{
+
+    background-color: #f5bf5c;
+}
+.remove,.add{
+    cursor: pointer;
+    transition: opacity 0.5s ease;
+}
+.minus{
+    background-position-x: -20px;
+}
+.plus{
+    background-position-x: 0px;
 }
