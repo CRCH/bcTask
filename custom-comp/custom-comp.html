@@ -141,8 +141,7 @@ class MyComp extends HTMLElement{
                 let currentX,currentY
                 this.addEventListeners(tmp.lastElementChild,
                     {event:'mouseover',fnc:(e)=>{
-                       // this.shadowRoot.querySelectorAll('.remove').forEach(x=>x.classList.toggle('hidden'))
-                       this.tableBody.childNodes.forEach((item,i)=>{
+                      this.tableBody.childNodes.forEach((item,i)=>{
                            if(e.target.parentNode === item)
                                currentY = i
                        })
@@ -152,13 +151,10 @@ class MyComp extends HTMLElement{
                                 currentX = i
                             }
                         })
+                        this.rowRemove.setAttribute('target',currentY)
                         this.colRemove.setAttribute('target',currentX)
-                        console.log(currentX,currentY)
-
-
                     }},
                     {event:'mouseout',fnc:(e)=>{
-
 
                     }})
             }
@@ -182,7 +178,7 @@ class MyComp extends HTMLElement{
                 event:'mouseover',
                 fnc:(e)=>{
 
-                    if(e.relatedTarget.parentNode.parentNode.contains(e.target) === false){
+                    if(this.tableBody.contains(e.relatedTarget) === false){
                     if(this.rows > 1) this.rowRemove.classList.toggle('hidden')
                     if(this.cols > 1) this.colRemove.classList.toggle('hidden')
                     }
@@ -191,7 +187,7 @@ class MyComp extends HTMLElement{
             {
                 event:'mouseout',
                 fnc:(e)=>{
-                  if(e.relatedTarget.parentNode.parentNode.contains(e.target) === false){
+                    if(this.tableBody.contains(e.relatedTarget) === false){
                     setTimeout(()=> {
                         if (this.rows > 1) this.rowRemove.classList.toggle('hidden')
                         if (this.cols > 1) this.colRemove.classList.toggle('hidden')
@@ -200,8 +196,8 @@ class MyComp extends HTMLElement{
                 },500)}
                 }
             })
-        this.shadowRoot.querySelector('.rem-col').addEventListener('click',()=>{console.log('rem-col clicked')})
-        this.shadowRoot.querySelector('.rem-row').addEventListener('click',()=>{console.log('rem-row clicked')})
+        this.colRemove.addEventListener('click',()=>{console.log('rem-col clicked')})
+        this.rowRemove.addEventListener('click',()=>{console.log('rem-row clicked')})
 
     }
 }
