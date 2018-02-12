@@ -1,6 +1,6 @@
-var wrapper = document.querySelector('.wrapper');
-var remCol = document.querySelector('#rem-col');
-var remRow = document.querySelector('#rem-row');
+var wrapper = document.querySelector('.task-table .task-table__box');
+var remCol = document.querySelector('.rem-col');
+var remRow = document.querySelector('.rem-row');
 var colCount = document.querySelectorAll('.row:last-child .block').length;
 var rowCount = document.querySelectorAll('.row').length;
 
@@ -53,7 +53,7 @@ function remove(trig) {
 
 function addRow() {
     rowCount++;
-    var rows = document.querySelector('.wrapper .row');
+    var rows = document.querySelector('.task-table .task-table__box .row');
     var newRow = rows.cloneNode(false);
     for(var i = 0; i < document.querySelectorAll('.row:last-child .block').length; i++)
         newRow.appendChild(addEvent(document.querySelector('.row .block').cloneNode()));
@@ -63,7 +63,7 @@ function addRow() {
 
 function removeRow() {
     rowCount--;
-    var row = Math.round(remRow.offsetTop/102);
+    var row = Math.round(remRow.offsetTop/51);
     var rows = document.querySelectorAll('.row');
     rows[row].remove();
     remRow.style.display = "none";
@@ -78,7 +78,7 @@ function addCol() {
 
 function removeCol() {
     colCount--;
-    var col = Math.round(remCol.offsetLeft/102);
+    var col = Math.round(remCol.offsetLeft/51);
     var rows = document.querySelectorAll('.row');
     rows.forEach(function (t) { t.children[col].remove(); });
     remCol.style.display = "none";

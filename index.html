@@ -2,51 +2,14 @@
 <html>
 <head>
 <title>Task</title>
-<link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="import" href="./custom-comp/custom-comp.html">
 </head>
 <body>
-<div class="wrapper">
-    <div id="add-row" class="add block" onclick="add(true)">
-        <span class="plus"></span>
-    </div>
-    <div id="add-col" class="add block" onclick="add(false)">
-      <span class="plus"></span>
-    </div>
-     <div id="rem-row" class="remove block hidden" onclick="remove(false)">
-     <span class="minus"></span>
-    </div>
-    <div id="rem-col" class="remove block hidden" onclick="remove(true)">
-      <span class="minus"></span>
-    </div>
-  <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-
-    </div>
-    <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-    </div>
-    <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-    </div>
-    <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-    </div>
-
+<div class="task-table">
+    <custom-comp cols="4" rows="4"></custom-comp>
+    <custom-comp cols="4" rows="4"></custom-comp>
 </div>
-
-
 <script src="./main.js"></script>
 </body>
 </html>
