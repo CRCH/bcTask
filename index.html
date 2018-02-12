@@ -2,46 +2,13 @@
 <html>
 <head>
 <title>Task</title>
-<link rel="stylesheet" href="./main.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="import" href="./custom-comp/custom-comp.html">
 </head>
 <body>
 <div class="task-table">
-<div class="task-table__box">
-    <div class="add-row add block plus" onclick="add(true)">
-    </div>
-    <div class="add-col add block plus" onclick="add(false)">
-    </div>
-     <div class="rem-row remove block hidden minus" onclick="remove(false)">
-    </div>
-    <div  class="rem-col remove block hidden minus" onclick="remove(true)">
-    </div>
-  <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-
-    </div>
-    <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-    </div>
-    <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-    </div>
-    <div class="row">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-    </div>
-
-</div>
+    <custom-comp cols="4" rows="4"></custom-comp>
+    <custom-comp cols="4" rows="4"></custom-comp>
 </div>
 <script src="./main.js"></script>
 </body>

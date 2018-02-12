@@ -1,0 +1,209 @@
+<template>
+    <style>
+        .comp-table{
+            position:relative;
+            display: inline-block;
+            margin:60px;
+        }
+        .comp-table-body{
+            border: 1px #4dabe4 solid;
+            padding: 1px;
+
+
+        }
+
+        .row{
+
+            display: flex;
+
+        }
+
+        .block{
+
+            margin: 1px;
+            height: 50px;
+            width: 50px;
+            background-color: #4dabe4;
+
+        }
+        .block span{
+
+            display: block;
+            margin:40px auto;
+            height: 20px;
+            width:20px;
+            background-repeat:no-repeat;
+        }
+
+        .remove{
+            position: absolute;
+            background-color: #b00100;
+        }
+
+        .remove:hover{
+            background-color: #c84d4c;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .add{
+            position: absolute;
+            background-color:  #f1a417;
+        }
+        .add:hover{
+
+            background-color: #f5bf5c;
+        }
+        .remove,.add{
+            cursor: pointer;
+            transition: opacity 1s ease,visibility 1s ease,background 1s ease;
+        }
+        .remove{
+            background-image: url(minus.svg);
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-background-size: 10px;
+            background-size: 10px;
+        }
+        .plus{
+            background-image: url(plus.svg);
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-background-size: 10px;
+            background-size: 10px;
+        }
+
+        .add-col{
+            top:2px;
+            right:-53px;
+        }
+        .add-row{
+            left:2px;
+            bottom: -53px;
+        }
+        .rem-col{
+            top: -53px;
+        }
+        .rem-row{
+
+            left: -53px;
+        }
+        .hidden{
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
+    <div class="comp-table"><div class="add-row add block plus" >
+    </div>
+        <div class="add-col add block plus">
+        </div>
+        <div class="rem-row remove block hidden minus">
+        </div>
+        <div  class="rem-col remove block hidden minus">
+        </div>
+        <div class="comp-table-body"></div>
+    </div>
+</template>
+
+<script>
+const template = document.currentScript.ownerDocument.querySelector('template').content
+
+const blockTpl = document.currentScript.ownerDocument.createElement('div')
+blockTpl.className = 'block'
+const rowTpl = blockTpl.cloneNode()
+rowTpl.className = 'row'
+
+
+class MyComp extends HTMLElement{
+
+
+    set cols(v){this.setAttribute('cols',v)}
+    set rows(v){this.setAttribute('rows',v)}
+    get cols(){return this.getAttribute('cols')?this.getAttribute('cols'):1}
+    get rows(){return this.getAttribute('rows')?this.getAttribute('rows'):1}
+    get rowRemove(){return this.shadowRoot.querySelector('.rem-row')}
+    get colRemove(){return this.shadowRoot.querySelector('.rem-col')}
+    get tableBody(){return this.shadowRoot.querySelector('.comp-table-body')}
+    constructor(){
+        super()
+
+        this.attachShadow({mode:'open'})
+
+
+    }
+    redraw(){
+        this.shadowRoot.querySelectorAll('.row').forEach(x=> x.remove())
+        for(let i = 0; i < this.rows; i++){
+            this.tableBody.appendChild(rowTpl.cloneNode())
+            for(let j = 0; j < this.cols; j++){
+               let tmp = this.shadowRoot.querySelectorAll('.row')[i]
+                tmp.appendChild(blockTpl.cloneNode())
+                let currentX,currentY
+                this.addEventListeners(tmp.lastElementChild,
+                    {event:'mouseover',fnc:(e)=>{
+                       // this.shadowRoot.querySelectorAll('.remove').forEach(x=>x.classList.toggle('hidden'))
+                       this.tableBody.childNodes.forEach((item,i)=>{
+                           if(e.target.parentNode === item)
+                               currentY = i
+                       })
+
+                        e.target.parentNode.childNodes.forEach((item,i)=>{
+                            if(item === e.target){
+                                currentX = i
+                            }
+                        })
+                        this.colRemove.setAttribute('target',currentX)
+                        console.log(currentX,currentY)
+
+
+                    }},
+                    {event:'mouseout',fnc:(e)=>{
+
+
+                    }})
+            }
+        }
+    }
+    addEventListeners(obj,...arr)
+    {
+        arr.forEach(arr=>{
+            obj.addEventListener(arr.event,arr.fnc)
+        })
+
+    }
+    addRow(){}
+    addCol(){}
+    connectedCallback(){
+
+        this.shadowRoot.appendChild(document.importNode(template,true))
+        this.redraw()
+        this.addEventListeners(this.tableBody,
+            {
+                event:'mouseover',
+                fnc:(e)=>{
+
+                    if(e.relatedTarget.parentNode.parentNode.contains(e.target) === false){
+                    if(this.rows > 1) this.rowRemove.classList.toggle('hidden')
+                    if(this.cols > 1) this.colRemove.classList.toggle('hidden')
+                    }
+                }
+            },
+            {
+                event:'mouseout',
+                fnc:(e)=>{
+                  if(e.relatedTarget.parentNode.parentNode.contains(e.target) === false){
+                    setTimeout(()=> {
+                        if (this.rows > 1) this.rowRemove.classList.toggle('hidden')
+                        if (this.cols > 1) this.colRemove.classList.toggle('hidden')
+
+
+                },500)}
+                }
+            })
+        this.shadowRoot.querySelector('.rem-col').addEventListener('click',()=>{console.log('rem-col clicked')})
+        this.shadowRoot.querySelector('.rem-row').addEventListener('click',()=>{console.log('rem-row clicked')})
+
+    }
+}
+customElements.define('custom-comp',MyComp)
+</script>
