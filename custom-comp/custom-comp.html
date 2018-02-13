@@ -59,14 +59,14 @@
             transition: opacity 1s ease,visibility 1s ease,background 1s ease;
         }
         .remove{
-            background-image: url(minus.svg);
+            background-image: url(./custom-comp/img/minus.svg);
             background-position: center;
             background-repeat: no-repeat;
             -webkit-background-size: 10px;
             background-size: 10px;
         }
         .plus{
-            background-image: url(plus.svg);
+            background-image: url(./custom-comp/img/plus.svg);
             background-position: center;
             background-repeat: no-repeat;
             -webkit-background-size: 10px;
@@ -123,14 +123,15 @@ class MyComp extends HTMLElement{
     get rows(){return this.getAttribute('rows')?this.getAttribute('rows'):1}
     get rowRemove(){return this.shadowRoot.querySelector('.rem-row')}
     get colRemove(){return this.shadowRoot.querySelector('.rem-col')}
+    get colAdd(){return this.shadowRoot.querySelector('.add-col')}
+    get rowAdd(){return this.shadowRoot.querySelector('.add-row')}
     get tableBody(){return this.shadowRoot.querySelector('.comp-table-body')}
+
     constructor(){
         super()
-
         this.attachShadow({mode:'open'})
-
-
     }
+
     redraw(){
         this.shadowRoot.querySelectorAll('.row').forEach(x=> x.remove())
         for(let i = 0; i < this.rows; i++){
@@ -138,11 +139,11 @@ class MyComp extends HTMLElement{
             for(let j = 0; j < this.cols; j++){
                let tmp = this.shadowRoot.querySelectorAll('.row')[i]
                 tmp.appendChild(blockTpl.cloneNode())
-                let currentX,currentY
+
                 this.addEventListeners(tmp.lastElementChild,
                     {event:'mouseover',fnc:(e)=>{
-                       // this.shadowRoot.querySelectorAll('.remove').forEach(x=>x.classList.toggle('hidden'))
-                       this.tableBody.childNodes.forEach((item,i)=>{
+                        let currentX,currentY
+                      this.tableBody.childNodes.forEach((item,i)=>{
                            if(e.target.parentNode === item)
                                currentY = i
                        })
@@ -152,13 +153,12 @@ class MyComp extends HTMLElement{
                                 currentX = i
                             }
                         })
+                        this.rowRemove.style.top = `${e.target.offsetTop}px`;
+                        this.colRemove.style.left = `${e.target.offsetLeft}px`;
+                        this.rowRemove.setAttribute('target',currentY)
                         this.colRemove.setAttribute('target',currentX)
-                        console.log(currentX,currentY)
-
-
                     }},
                     {event:'mouseout',fnc:(e)=>{
-
 
                     }})
             }
@@ -171,37 +171,110 @@ class MyComp extends HTMLElement{
         })
 
     }
-    addRow(){}
-    addCol(){}
+
     connectedCallback(){
 
         this.shadowRoot.appendChild(document.importNode(template,true))
         this.redraw()
-        this.addEventListeners(this.tableBody,
-            {
+        this.addEventListeners(this.tableBody, {
                 event:'mouseover',
                 fnc:(e)=>{
+                    if(this.tableBody.contains(e.relatedTarget) === false){
+                    if(this.rows > 1) {
+                        this.rowRemove.classList.toggle('hidden')
+                        this.rowRemove.style.display = 'block'
+                    }
+                    if(this.cols > 1) {
+                        this.colRemove.classList.toggle('hidden')
+                        this.colRemove.style.display = 'block'
+                    }
 
-                    if(e.relatedTarget.parentNode.parentNode.contains(e.target) === false){
-                    if(this.rows > 1) this.rowRemove.classList.toggle('hidden')
-                    if(this.cols > 1) this.colRemove.classList.toggle('hidden')
                     }
                 }
             },
+
             {
                 event:'mouseout',
                 fnc:(e)=>{
-                  if(e.relatedTarget.parentNode.parentNode.contains(e.target) === false){
+                    if(this.tableBody.contains(e.relatedTarget) === false){
                     setTimeout(()=> {
                         if (this.rows > 1) this.rowRemove.classList.toggle('hidden')
                         if (this.cols > 1) this.colRemove.classList.toggle('hidden')
-
-
                 },500)}
                 }
             })
-        this.shadowRoot.querySelector('.rem-col').addEventListener('click',()=>{console.log('rem-col clicked')})
-        this.shadowRoot.querySelector('.rem-row').addEventListener('click',()=>{console.log('rem-row clicked')})
+
+        this.colRemove.addEventListener('click',()=>{
+            this.colRemove.style.display = 'none';
+            let target = this.colRemove.getAttribute('target')
+           this.tableBody.querySelectorAll('.row').forEach(x=>x.children[target].remove())
+            this.cols--;
+        })
+
+        this.rowRemove.addEventListener('click',()=>{
+            this.rowRemove.style.display = 'none';
+            let target = this.rowRemove.getAttribute('target')
+            this.tableBody.querySelectorAll('.row')[target].remove()
+            this.rows--;
+        })
+
+        this.colAdd.addEventListener('click',()=>{
+
+            this.tableBody.querySelectorAll('.row').forEach(x=>{
+              let prepBlock = blockTpl.cloneNode()
+
+                this.addEventListeners(prepBlock,
+                    {
+                        event:'mouseover', fnc:(e)=>{
+                        let currentX,currentY
+                        this.tableBody.childNodes.forEach((item,i)=>{
+                            if(e.target.parentNode === item)
+                                currentY = i
+                        })
+
+                        e.target.parentNode.childNodes.forEach((item,i)=>{
+                            if(item === e.target){
+                                currentX = i
+                            }
+                        })
+                        this.rowRemove.style.top = `${e.target.offsetTop}px`;
+                        this.colRemove.style.left = `${e.target.offsetLeft}px`;
+                        this.rowRemove.setAttribute('target',currentY)
+                        this.colRemove.setAttribute('target',currentX)
+
+                    }})
+                x.appendChild(prepBlock)
+            })
+            this.cols++
+        })
+        this.rowAdd.addEventListener('click',()=>{
+            let rowTmp = this.tableBody.querySelector('.row').cloneNode(true)
+
+            rowTmp.childNodes.forEach((x)=>{
+                x.addEventListener('mouseover',(e)=>{
+                        let currentX,currentY
+                        this.tableBody.childNodes.forEach((item,i)=>{
+                            if(e.target.parentNode === item)
+                                currentY = i
+                        })
+
+                        e.target.parentNode.childNodes.forEach((item,i)=>{
+                            if(item === e.target){
+                                currentX = i
+                            }
+                        })
+                        this.rowRemove.style.top = `${e.target.offsetTop}px`;
+                        this.colRemove.style.left = `${e.target.offsetLeft}px`;
+                        this.rowRemove.setAttribute('target',currentY)
+                        this.colRemove.setAttribute('target',currentX)
+
+                    })})
+            this.tableBody.appendChild(rowTmp)
+            this.rows++
+            })
+
+
+
 
     }
 }
