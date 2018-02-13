@@ -106,87 +106,87 @@
 </template>
 
 <script>
-const template = document.currentScript.ownerDocument.querySelector('template').content
 
-const blockTpl = document.currentScript.ownerDocument.createElement('div')
-blockTpl.className = 'block'
-const rowTpl = blockTpl.cloneNode()
-rowTpl.className = 'row'
+const template = document.currentScript.ownerDocument.querySelector('template').content;
+const blockTpl = document.currentScript.ownerDocument.createElement('div');
+blockTpl.className = 'block';
+const rowTpl = blockTpl.cloneNode();
+rowTpl.className = 'row';
 
 
 class MyComp extends HTMLElement{
 
 
-    set cols(v){this.setAttribute('cols',v)}
-    set rows(v){this.setAttribute('rows',v)}
-    get cols(){return this.getAttribute('cols')?this.getAttribute('cols'):1}
-    get rows(){return this.getAttribute('rows')?this.getAttribute('rows'):1}
-    get rowRemove(){return this.shadowRoot.querySelector('.rem-row')}
-    get colRemove(){return this.shadowRoot.querySelector('.rem-col')}
-    get colAdd(){return this.shadowRoot.querySelector('.add-col')}
-    get rowAdd(){return this.shadowRoot.querySelector('.add-row')}
-    get tableBody(){return this.shadowRoot.querySelector('.comp-table-body')}
+    set cols(v){this.setAttribute('cols',v);}
+    set rows(v){this.setAttribute('rows',v);}
+    get cols(){return this.getAttribute('cols')?this.getAttribute('cols'):1;}
+    get rows(){return this.getAttribute('rows')?this.getAttribute('rows'):1;}
+    get rowRemove(){return this.shadowRoot.querySelector('.rem-row');}
+    get colRemove(){return this.shadowRoot.querySelector('.rem-col');}
+    get colAdd(){return this.shadowRoot.querySelector('.add-col');}
+    get rowAdd(){return this.shadowRoot.querySelector('.add-row');}
+    get tableBody(){return this.shadowRoot.querySelector('.comp-table-body');}
 
     constructor(){
-        super()
-        this.attachShadow({mode:'open'})
+        super();
+        this.attachShadow({mode:'open'});
     }
 
     redraw(){
-        this.shadowRoot.querySelectorAll('.row').forEach(x=> x.remove())
+        this.shadowRoot.querySelectorAll('.row').forEach(x=> x.remove());
         for(let i = 0; i < this.rows; i++){
-            this.tableBody.appendChild(rowTpl.cloneNode())
+            this.tableBody.appendChild(rowTpl.cloneNode());
             for(let j = 0; j < this.cols; j++){
-               let tmp = this.shadowRoot.querySelectorAll('.row')[i]
-                tmp.appendChild(blockTpl.cloneNode())
+               let tmp = this.shadowRoot.querySelectorAll('.row')[i];
+                tmp.appendChild(blockTpl.cloneNode());
 
                 this.addEventListeners(tmp.lastElementChild,
                     {event:'mouseover',fnc:(e)=>{
-                        let currentX,currentY
+                        let currentX,currentY;
                       this.tableBody.childNodes.forEach((item,i)=>{
                            if(e.target.parentNode === item)
-                               currentY = i
-                       })
+                               currentY = i;
+                       });
 
                         e.target.parentNode.childNodes.forEach((item,i)=>{
                             if(item === e.target){
-                                currentX = i
+                                currentX = i;
                             }
-                        })
+                        });
                         this.rowRemove.style.top = `${e.target.offsetTop}px`;
                         this.colRemove.style.left = `${e.target.offsetLeft}px`;
-                        this.rowRemove.setAttribute('target',currentY)
-                        this.colRemove.setAttribute('target',currentX)
+                        this.rowRemove.setAttribute('target',currentY);
+                        this.colRemove.setAttribute('target',currentX);
                     }},
                     {event:'mouseout',fnc:(e)=>{
 
-                    }})
+                    }});
             }
         }
     }
     addEventListeners(obj,...arr)
     {
         arr.forEach(arr=>{
-            obj.addEventListener(arr.event,arr.fnc)
-        })
+            obj.addEventListener(arr.event,arr.fnc);
+        });
 
     }
 
     connectedCallback(){
 
         this.shadowRoot.appendChild(document.importNode(template,true))
-        this.redraw()
+        this.redraw();
         this.addEventListeners(this.tableBody, {
                 event:'mouseover',
                 fnc:(e)=>{
                     if(this.tableBody.contains(e.relatedTarget) === false){
                     if(this.rows > 1) {
-                        this.rowRemove.classList.toggle('hidden')
-                        this.rowRemove.style.display = 'block'
+                        this.rowRemove.classList.toggle('hidden');
+                        this.rowRemove.style.display = 'block';
                     }
                     if(this.cols > 1) {
-                        this.colRemove.classList.toggle('hidden')
-                        this.colRemove.style.display = 'block'
+                        this.colRemove.classList.toggle('hidden');
+                        this.colRemove.style.display = 'block';
                     }
 
                     }
@@ -198,80 +198,79 @@ class MyComp extends HTMLElement{
                 fnc:(e)=>{
                     if(this.tableBody.contains(e.relatedTarget) === false){
                     setTimeout(()=> {
-                        if (this.rows > 1) this.rowRemove.classList.toggle('hidden')
-                        if (this.cols > 1) this.colRemove.classList.toggle('hidden')
-                },500)}
-                }
-            })
+                        if (this.rows > 1) this.rowRemove.classList.toggle('hidden');
+                        if (this.cols > 1) this.colRemove.classList.toggle('hidden');
+                },500);
+                    }}
+            });
 
         this.colRemove.addEventListener('click',()=>{
             this.colRemove.style.display = 'none';
-            let target = this.colRemove.getAttribute('target')
-           this.tableBody.querySelectorAll('.row').forEach(x=>x.children[target].remove())
+            let target = this.colRemove.getAttribute('target');
+           this.tableBody.querySelectorAll('.row').forEach(x=>x.children[target].remove());
             this.cols--;
-        })
+        });
 
         this.rowRemove.addEventListener('click',()=>{
             this.rowRemove.style.display = 'none';
-            let target = this.rowRemove.getAttribute('target')
-            this.tableBody.querySelectorAll('.row')[target].remove()
+            let target = this.rowRemove.getAttribute('target');
+            this.tableBody.querySelectorAll('.row')[target].remove();
             this.rows--;
-        })
+        });
 
         this.colAdd.addEventListener('click',()=>{
-
             this.tableBody.querySelectorAll('.row').forEach(x=>{
-              let prepBlock = blockTpl.cloneNode()
-
+              let prepBlock = blockTpl.cloneNode();
                 this.addEventListeners(prepBlock,
                     {
                         event:'mouseover', fnc:(e)=>{
-                        let currentX,currentY
+                        let currentX,currentY;
                         this.tableBody.childNodes.forEach((item,i)=>{
                             if(e.target.parentNode === item)
-                                currentY = i
-                        })
+                                currentY = i;
+                        });
 
                         e.target.parentNode.childNodes.forEach((item,i)=>{
                             if(item === e.target){
-                                currentX = i
+                                currentX = i;
                             }
-                        })
+                        });
                         this.rowRemove.style.top = `${e.target.offsetTop}px`;
                         this.colRemove.style.left = `${e.target.offsetLeft}px`;
-                        this.rowRemove.setAttribute('target',currentY)
-                        this.colRemove.setAttribute('target',currentX)
+                        this.rowRemove.setAttribute('target',currentY);
+                        this.colRemove.setAttribute('target',currentX);
 
-                    }})
-                x.appendChild(prepBlock)
-            })
-            this.cols++
-        })
+                    }});
+                x.appendChild(prepBlock);
+            });
+            this.cols++;
+        });
+
         this.rowAdd.addEventListener('click',()=>{
-            let rowTmp = this.tableBody.querySelector('.row').cloneNode(true)
+            let rowTmp = this.tableBody.querySelector('.row').cloneNode(true);
 
             rowTmp.childNodes.forEach((x)=>{
                 x.addEventListener('mouseover',(e)=>{
-                        let currentX,currentY
+                        let currentX,currentY;
                         this.tableBody.childNodes.forEach((item,i)=>{
                             if(e.target.parentNode === item)
-                                currentY = i
+                                currentY = i;
                         })
 
                         e.target.parentNode.childNodes.forEach((item,i)=>{
                             if(item === e.target){
-                                currentX = i
+                                currentX = i;
                             }
-                        })
+                        });
                         this.rowRemove.style.top = `${e.target.offsetTop}px`;
                         this.colRemove.style.left = `${e.target.offsetLeft}px`;
-                        this.rowRemove.setAttribute('target',currentY)
-                        this.colRemove.setAttribute('target',currentX)
+                        this.rowRemove.setAttribute('target',currentY);
+                        this.colRemove.setAttribute('target',currentX);
 
-                    })})
-            this.tableBody.appendChild(rowTmp)
-            this.rows++
-            })
+                    })});
+            this.tableBody.appendChild(rowTmp);
+            this.rows++;
+            });
 
 
 
