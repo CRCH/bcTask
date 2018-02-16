@@ -48,6 +48,7 @@ class MyComp extends HTMLElement {
   }
 
   connectedCallback() {
+    let timeout;
     this.shadowRoot.appendChild(document.importNode(document.currentScript.ownerDocument.querySelector('template').content, true));
     for (let i = 0; i < this.rows; i += 1) {
       this.tableBody.appendChild(this.rowTpl.cloneNode());
@@ -56,7 +57,7 @@ class MyComp extends HTMLElement {
         tmp.appendChild(this.blockTpl.cloneNode());
       }
     }
-    let timeout;
+
     this.tableBody.addEventListener('mouseover', (event) => {
       let curX;
       let curY;
@@ -72,7 +73,6 @@ class MyComp extends HTMLElement {
           this.colRemove.style.display = 'block';
         }
         const curTarg = event.target;
-
         for (let i = 0; i < curTarg.parentNode.children.length; i += 1) {
           if (curTarg.parentNode.children[i] === curTarg) {
             curY = i;
@@ -162,7 +162,6 @@ class MyComp extends HTMLElement {
     this.rowAdd.addEventListener('click', () => {
       const rowTmp = this.tableBody.querySelector('.row').cloneNode(true);
       this.tableBody.appendChild(rowTmp);
-      console.log(typeof this.rows);
       this.rows = parseInt(this.rows, 10) + 1;
     });
   }
