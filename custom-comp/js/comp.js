@@ -28,12 +28,11 @@ class MyComp extends HTMLElement {
     return this.shadowRoot.querySelector('.comp-table-body');
   }
   get blockTpl() {
-    return this.tableBody.querySelector('.row .block');
+    return this.shadowRoot.querySelector('template').content.querySelector('.block');
   }
   get rowTpl() {
-    return this.tableBody.querySelector('.row');
+    return this.shadowRoot.querySelector('template').content.querySelector('.row');
   }
-
 
   constructor() {
     super();
@@ -42,37 +41,6 @@ class MyComp extends HTMLElement {
     });
   }
 
-  redraw() {
-    // this.shadowRoot.querySelectorAll('.row').forEach(x => x.remove());
-    for (let i = 0; i < this.rows; i += 1) {
-      this.tableBody.appendChild(this.rowTpl.cloneNode());
-      for (let j = 0; j < this.cols; j += 1) {
-        const tmp = this.shadowRoot.querySelectorAll('.row')[i];
-        tmp.appendChild(this.blockTpl.cloneNode());
-
-        MyComp.addEventListeners(tmp.lastElementChild, {
-          event: 'mouseover',
-          fnc: (e) => {
-            let currentX;
-            let currentY;
-            this.tableBody.childNodes.forEach((item, iter) => {
-              if (e.target.parentNode === item) { currentY = iter; }
-            });
-
-            e.target.parentNode.childNodes.forEach((item, iter) => {
-              if (item === e.target) {
-                currentX = iter;
-              }
-            });
-            this.rowRemove.style.top = `${e.target.offsetTop}px`;
-            this.colRemove.style.left = `${e.target.offsetLeft}px`;
-            this.rowRemove.setAttribute('target', currentY);
-            this.colRemove.setAttribute('target', currentX);
-          },
-        });
-      }
-    }
-  }
   static addEventListeners(obj, ...arr) {
     arr.forEach((el) => {
       obj.addEventListener(el.event, el.fnc);
@@ -81,103 +49,121 @@ class MyComp extends HTMLElement {
 
   connectedCallback() {
     this.shadowRoot.appendChild(document.importNode(document.currentScript.ownerDocument.querySelector('template').content, true));
-    this.redraw();
-    MyComp.addEventListeners(
-      this.tableBody, {
-        event: 'mouseover',
-        fnc: (e) => {
-          if (this.tableBody.contains(e.relatedTarget) === false) {
-            if (this.rows > 1) {
-              this.rowRemove.classList.toggle('hidden');
-              this.rowRemove.style.display = 'block';
-            }
-            if (this.cols > 1) {
-              this.colRemove.classList.toggle('hidden');
-              this.colRemove.style.display = 'block';
-            }
-          }
-        },
-      },
+    for (let i = 0; i < this.rows; i += 1) {
+      this.tableBody.appendChild(this.rowTpl.cloneNode());
+      for (let j = 0; j < this.cols; j += 1) {
+        const tmp = this.shadowRoot.querySelectorAll('.row')[i];
+        tmp.appendChild(this.blockTpl.cloneNode());
+      }
+    }
+    let timeout;
+    this.tableBody.addEventListener('mouseover', (event) => {
+      let curX;
+      let curY;
+      clearTimeout(timeout);
+      if (event.target.classList.contains('block') &&
+        !event.target.classList.contains('add')) {
+        if (this.rows > 1) {
+          this.rowRemove.classList.remove('hidden');
+          this.rowRemove.style.display = 'block';
+        }
+        if (this.cols > 1) {
+          this.colRemove.classList.remove('hidden');
+          this.colRemove.style.display = 'block';
+        }
+        const curTarg = event.target;
 
-      {
-        event: 'mouseout',
-        fnc: (e) => {
-          if (this.tableBody.contains(e.relatedTarget) === false) {
-            setTimeout(() => {
-              if (this.rows > 1) this.rowRemove.classList.toggle('hidden');
-              if (this.cols > 1) this.colRemove.classList.toggle('hidden');
-            }, 500);
+        for (let i = 0; i < curTarg.parentNode.children.length; i += 1) {
+          if (curTarg.parentNode.children[i] === curTarg) {
+            curY = i;
           }
-        },
+        }
+        for (let i = 0; i < curTarg.parentNode.parentNode.children.length; i += 1) {
+          if (curTarg.parentNode.parentNode.children[i] === curTarg.parentNode) {
+            curX = i;
+          }
+        }
+        this.colRemove.style.left = `${curTarg.offsetLeft - 1}px`;
+        this.rowRemove.style.top = `${curTarg.offsetTop - 1}px`;
+        this.rowRemove.setAttribute('target', curY);
+        this.colRemove.setAttribute('target', curX);
+      }
+    });
+
+    MyComp.addEventListeners(this.tableBody, {
+      event: 'mouseout',
+      fnc: (e) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          if (this.rows > 1) this.rowRemove.classList.add('hidden');
+          if (this.cols > 1) this.colRemove.classList.add('hidden');
+        }, 500);
+
+        if (this.tableBody.contains(e.relatedTarget)) {
+          clearTimeout(timeout);
+        }
       },
-    );
+    });
+    MyComp.addEventListeners(this.colRemove, {
+      event: 'mouseover',
+      fnc: () => {
+        clearTimeout(timeout);
+      },
+    }, {
+      event: 'mouseout',
+      fnc: (event) => {
+        if (!this.tableBody.parentElement.contains(event.relatedTarget)) {
+          timeout = setTimeout(() => {
+            this.colRemove.classList.add('hidden');
+            this.rowRemove.classList.add('hidden');
+          }, 500);
+        }
+      },
+    });
+    MyComp.addEventListeners(this.rowRemove, {
+      event: 'mouseover',
+      fnc: () => {
+        clearTimeout(timeout);
+      },
+    }, {
+      event: 'mouseout',
+      fnc: (event) => {
+        if (!this.tableBody.parentElement.contains(event.relatedTarget)) {
+          timeout = setTimeout(() => {
+            this.colRemove.classList.add('hidden');
+            this.rowRemove.classList.add('hidden');
+          }, 500);
+        }
+      },
+    });
 
     this.colRemove.addEventListener('click', () => {
       this.colRemove.style.display = 'none';
       const target = this.colRemove.getAttribute('target');
       this.tableBody.querySelectorAll('.row').forEach(x => x.children[target].remove());
-      this.cols += 1;
+      this.cols = parseInt(this.cols, 10) - 1;
     });
 
     this.rowRemove.addEventListener('click', () => {
       this.rowRemove.style.display = 'none';
       const target = this.rowRemove.getAttribute('target');
       this.tableBody.querySelectorAll('.row')[target].remove();
-      this.rows += 1;
+      this.rows = parseInt(this.rows, 10) - 1;
     });
 
     this.colAdd.addEventListener('click', () => {
       this.tableBody.querySelectorAll('.row').forEach((x) => {
         const prepBlock = this.blockTpl.cloneNode();
-        MyComp.addEventListeners(prepBlock, {
-          event: 'mouseover',
-          fnc: (e) => {
-            let currentX;
-            let currentY;
-            this.tableBody.childNodes.forEach((item, i) => {
-              if (e.target.parentNode === item) { currentY = i; }
-            });
-
-            e.target.parentNode.childNodes.forEach((item, i) => {
-              if (item === e.target) {
-                currentX = i;
-              }
-            });
-            this.rowRemove.style.top = `${e.target.offsetTop}px`;
-            this.colRemove.style.left = `${e.target.offsetLeft}px`;
-            this.rowRemove.setAttribute('target', currentY);
-            this.colRemove.setAttribute('target', currentX);
-          },
-        });
         x.appendChild(prepBlock);
       });
-      this.cols += 1;
+      this.cols = parseInt(this.cols, 10) + 1;
     });
 
     this.rowAdd.addEventListener('click', () => {
       const rowTmp = this.tableBody.querySelector('.row').cloneNode(true);
-
-      rowTmp.childNodes.forEach((x) => {
-        x.addEventListener('mouseover', (e) => {
-          let currentX;
-          let currentY;
-          this.tableBody.childNodes.forEach((item, i) => {
-            if (e.target.parentNode === item) { currentY = i; }
-          });
-
-          e.target.parentNode.childNodes.forEach((item, i) => {
-            if (item === e.target) {
-              currentX = i;
-            }
-          });
-          this.rowRemove.style.top = `${e.target.offsetTop}px`;
-          this.colRemove.style.left = `${e.target.offsetLeft}px`;
-          this.rowRemove.setAttribute('target', currentY);
-          this.colRemove.setAttribute('target', currentX);
-        });
-      });
       this.tableBody.appendChild(rowTmp);
-      this.rows += 1;
+      console.log(typeof this.rows);
+      this.rows = parseInt(this.rows, 10) + 1;
     });
   }
 }

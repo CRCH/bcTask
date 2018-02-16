@@ -44,8 +44,6 @@
 
         .remove:hover {
             background-color: #c84d4c;
-            visibility: visible;
-            opacity: 1;
         }
 
         .add {
@@ -61,7 +59,7 @@
         .remove,
         .add {
             cursor: pointer;
-            transition: opacity 1s ease, visibility 1s ease, background 1s ease;
+            transition: opacity 1s ease, visibility 1s ease, background 1s ease,left 0.5s ease, top 0.5s ease;
         }
 
         .remove {
@@ -70,6 +68,7 @@
             background-repeat: no-repeat;
             -webkit-background-size: 10px;
             background-size: 10px;
+            
         }
 
         .plus {
@@ -92,10 +91,11 @@
 
         .rem-col {
             top: -53px;
+            left:2px;
         }
 
         .rem-row {
-
+            top:2px;
             left: -53px;
         }
 
@@ -113,8 +113,12 @@
         </div>
         <div class="rem-col remove block hidden minus">
         </div>
-        <div class="comp-table-body"><div class="row"><div class="block"></div></div></div>
+        <div class="comp-table-body"></div>
+        <template>
+            <div class="row">
+                <div class="block"></div>
+            </div>
+        </template>
     </div>
 </template>
-
 <script src="./js/comp.js"></script>
