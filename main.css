@@ -1,0 +1,13 @@
+
+.task-table{
+    position: relative;
+    width:500px;
+    height:500px;
+}
+
+.task-table__box{
+    border: 1px #4dabe4 solid;
+    padding: 1px;
+
+
+}
