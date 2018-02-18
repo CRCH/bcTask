@@ -1,0 +1,125 @@
+<template>
+    <style>
+        .comp-table {
+            position: relative;
+            display: inline-block;
+            margin: 60px;
+        }
+
+        .comp-table-body {
+            border: 1px #4dabe4 solid;
+            padding: 1px;
+
+
+        }
+
+        .row {
+
+            display: flex;
+
+        }
+
+        .block {
+
+            margin: 1px;
+            height: 50px;
+            width: 50px;
+            background-color: #4dabe4;
+
+        }
+
+        .block span {
+
+            display: block;
+            margin: 40px auto;
+            height: 20px;
+            width: 20px;
+            background-repeat: no-repeat;
+        }
+
+        .remove {
+            position: absolute;
+            background-color: #b00100;
+        }
+
+        .remove:hover {
+            background-color: #c84d4c;
+        }
+
+        .add {
+            position: absolute;
+            background-color: #f1a417;
+        }
+
+        .add:hover {
+
+            background-color: #f5bf5c;
+        }
+
+        .remove,
+        .add {
+            cursor: pointer;
+            transition: opacity 1s ease, visibility 1s ease, background 1s ease, left 0.5s ease, top 0.5s ease;
+        }
+
+        
+        .remove {
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogI2ZmZjsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgaWQ9IlJlY3RhbmdsZV8xX2NvcHkiIGRhdGEtbmFtZT0iUmVjdGFuZ2xlIDEgY29weSIgY2xhc3M9ImNscy0xIiB4PSItMSIgeT0iMzUiIHdpZHRoPSIxMDIiIGhlaWdodD0iMzAiLz4KPC9zdmc+Cg==);
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-background-size: 10px;
+            background-size: 10px;
+
+        }
+
+        .plus {
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogI2ZmZjsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9ImNscy0xIiB4PSIzNSIgeT0iLTEiIHdpZHRoPSIzMCIgaGVpZ2h0PSIxMDIiLz4KICA8cmVjdCBpZD0iUmVjdGFuZ2xlXzFfY29weSIgZGF0YS1uYW1lPSJSZWN0YW5nbGUgMSBjb3B5IiBjbGFzcz0iY2xzLTEiIHg9Ii0xIiB5PSIzNSIgd2lkdGg9IjEwMiIgaGVpZ2h0PSIzMCIvPgo8L3N2Zz4K);
+            background-position: center;
+            background-repeat: no-repeat;
+            -webkit-background-size: 10px;
+            background-size: 10px;
+        }
+
+        .add-col {
+            top: 2px;
+            right: -53px;
+        }
+
+        .add-row {
+            left: 2px;
+            bottom: -53px;
+        }
+
+        .rem-col {
+            top: -53px;
+            left: 2px;
+        }
+
+        .rem-row {
+            top: 2px;
+            left: -53px;
+        }
+
+        .hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
+    <div class="comp-table">
+        <div class="add-row add block plus">
+        </div>
+        <div class="add-col add block plus">
+        </div>
+        <div class="rem-row remove block hidden minus">
+        </div>
+        <div class="rem-col remove block hidden minus">
+        </div>
+        <div class="comp-table-body"></div>
+        <template>
+            <div class="row">
+                <div class="block"></div>
+            </div>
+        </template>
+    </div>
+</template>
+<script src="./js/comp.js"></script>
