@@ -1,59 +1,31 @@
 /* eslint-env browser */
-class MyComp extends HTMLElement {
-  set cols(v) {
-    this.setAttribute('cols', v);
-  }
-  set rows(v) {
-    this.setAttribute('rows', v);
-  }
-  get cols() {
-    return this.getAttribute('cols') ? this.getAttribute('cols') : 1;
-  }
-  get rows() {
-    return this.getAttribute('rows') ? this.getAttribute('rows') : 1;
-  }
-  get rowRemove() {
-    return this.shadowRoot.querySelector('.rem-row');
-  }
-  get colRemove() {
-    return this.shadowRoot.querySelector('.rem-col');
-  }
-  get colAdd() {
-    return this.shadowRoot.querySelector('.add-col');
-  }
-  get rowAdd() {
-    return this.shadowRoot.querySelector('.add-row');
-  }
-  get tableBody() {
-    return this.shadowRoot.querySelector('.comp-table-body');
-  }
-  get blockTpl() {
-    return this.shadowRoot.querySelector('template').content.querySelector('.block');
-  }
-  get rowTpl() {
-    return this.shadowRoot.querySelector('template').content.querySelector('.row');
-  }
 
-  constructor() {
-    super();
-    this.attachShadow({
-      mode: 'open',
-    });
-  }
 
+class CompTable {
+  // @param: table-body-id selector for exmpl '#comp-table0'
   static addEventListeners(obj, ...arr) {
     arr.forEach((el) => {
       obj.addEventListener(el.event, el.fnc);
     });
   }
-
-  connectedCallback() {
+  constructor(id, numRows, numCols) {
+    this.numRows = numRows;
+    this.numCols = numCols;
+    this.table = document.currentScript.ownerDocument.querySelector(id);
+    this.rowRemove = this.table.querySelector('.comp-table__button--rem-row');
+    this.colRemove = this.table.querySelector('.comp-table__button--rem-col');
+    this.rowAdd = this.table.querySelector('.comp-table__button--add-row');
+    this.colAdd = this.table.querySelector('.comp-table__button--add-col');
+    this.tableBody = this.table.querySelector('.comp-table__body');
+    this.rowTpl = document.createElement('div');
+    this.rowTpl.classList.add('comp-table__row');
+    this.blockTpl = document.createElement('div');
+    this.blockTpl.classList.add('comp-table__block');
     let timeout;
-    this.shadowRoot.appendChild(document.importNode(document.currentScript.ownerDocument.querySelector('template').content, true));
-    for (let i = 0; i < this.rows; i += 1) {
+    for (let i = 0; i < this.numRows; i += 1) {
       this.tableBody.appendChild(this.rowTpl.cloneNode());
-      for (let j = 0; j < this.cols; j += 1) {
-        const tmp = this.shadowRoot.querySelectorAll('.row')[i];
+      for (let j = 0; j < this.numCols; j += 1) {
+        const tmp = this.tableBody.querySelectorAll('.comp-table__row')[i];
         tmp.appendChild(this.blockTpl.cloneNode());
       }
     }
@@ -62,14 +34,14 @@ class MyComp extends HTMLElement {
       let curX;
       let curY;
       clearTimeout(timeout);
-      if (event.target.classList.contains('block') &&
-        !event.target.classList.contains('add')) {
-        if (this.rows > 1) {
-          this.rowRemove.classList.remove('hidden');
+      if (event.target.classList.contains('comp-table__block') &&
+        !event.target.classList.contains('comp-table__button--add')) {
+        if (this.numRows > 1) {
+          this.rowRemove.classList.remove('comp-table__button--hidden');
           this.rowRemove.style.display = 'block';
         }
-        if (this.cols > 1) {
-          this.colRemove.classList.remove('hidden');
+        if (this.numCols > 1) {
+          this.colRemove.classList.remove('comp-table__button--hidden');
           this.colRemove.style.display = 'block';
         }
         const curTarg = event.target;
@@ -90,13 +62,13 @@ class MyComp extends HTMLElement {
       }
     });
 
-    MyComp.addEventListeners(this.tableBody, {
+    CompTable.addEventListeners(this.tableBody, {
       event: 'mouseout',
       fnc: (e) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-          if (this.rows > 1) this.rowRemove.classList.add('hidden');
-          if (this.cols > 1) this.colRemove.classList.add('hidden');
+          if (this.numRows > 1) this.rowRemove.classList.add('comp-table__button--hidden');
+          if (this.numCols > 1) this.colRemove.classList.add('comp-table__button--hidden');
         }, 500);
 
         if (this.tableBody.contains(e.relatedTarget)) {
@@ -104,7 +76,7 @@ class MyComp extends HTMLElement {
         }
       },
     });
-    MyComp.addEventListeners(this.colRemove, {
+    CompTable.addEventListeners(this.colRemove, {
       event: 'mouseover',
       fnc: () => {
         clearTimeout(timeout);
@@ -114,13 +86,13 @@ class MyComp extends HTMLElement {
       fnc: (event) => {
         if (!this.tableBody.parentElement.contains(event.relatedTarget)) {
           timeout = setTimeout(() => {
-            this.colRemove.classList.add('hidden');
-            this.rowRemove.classList.add('hidden');
+            this.colRemove.classList.add('comp-table__button--hidden');
+            this.rowRemove.classList.add('comp-table__button--hidden');
           }, 500);
         }
       },
     });
-    MyComp.addEventListeners(this.rowRemove, {
+    CompTable.addEventListeners(this.rowRemove, {
       event: 'mouseover',
       fnc: () => {
         clearTimeout(timeout);
@@ -130,8 +102,8 @@ class MyComp extends HTMLElement {
       fnc: (event) => {
         if (!this.tableBody.parentElement.contains(event.relatedTarget)) {
           timeout = setTimeout(() => {
-            this.colRemove.classList.add('hidden');
-            this.rowRemove.classList.add('hidden');
+            this.colRemove.classList.add('comp-table__button--hidden');
+            this.rowRemove.classList.add('comp-table__button--hidden');
           }, 500);
         }
       },
@@ -140,30 +112,34 @@ class MyComp extends HTMLElement {
     this.colRemove.addEventListener('click', () => {
       this.colRemove.style.display = 'none';
       const target = this.colRemove.getAttribute('target');
-      this.tableBody.querySelectorAll('.row').forEach(x => x.children[target].remove());
-      this.cols = parseInt(this.cols, 10) - 1;
+      this.tableBody.querySelectorAll('.comp-table__row').forEach(x => x.children[target].remove());
+      this.numCols -= 1;
     });
 
     this.rowRemove.addEventListener('click', () => {
       this.rowRemove.style.display = 'none';
       const target = this.rowRemove.getAttribute('target');
-      this.tableBody.querySelectorAll('.row')[target].remove();
-      this.rows = parseInt(this.rows, 10) - 1;
+      this.tableBody.querySelectorAll('.comp-table__row')[target].remove();
+      this.numRows -= 1;
     });
 
     this.colAdd.addEventListener('click', () => {
-      this.tableBody.querySelectorAll('.row').forEach((x) => {
+      this.tableBody.querySelectorAll('.comp-table__row').forEach((x) => {
         const prepBlock = this.blockTpl.cloneNode();
         x.appendChild(prepBlock);
       });
-      this.cols = parseInt(this.cols, 10) + 1;
+      this.numCols += 1;
     });
 
     this.rowAdd.addEventListener('click', () => {
-      const rowTmp = this.tableBody.querySelector('.row').cloneNode(true);
+      const rowTmp = this.tableBody.querySelector('.comp-table__row').cloneNode(true);
       this.tableBody.appendChild(rowTmp);
-      this.rows = parseInt(this.rows, 10) + 1;
+      this.numRows += 1;
     });
   }
 }
-customElements.define('custom-comp', MyComp);
+
+(() => {
+  const table0 = new CompTable('#comp-table0', 4, 4);
+  const table1 = new CompTable('#comp-table1', 4, 4);
+})();
