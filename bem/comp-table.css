@@ -2,6 +2,7 @@
     position: relative;
     display: inline-block;
     margin: 60px;
+    vertical-align: top;
 }
 
 .comp-table__body {
