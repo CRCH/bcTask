@@ -143,3 +143,6 @@ class CompTable {
   const table0 = new CompTable('#comp-table0', 4, 4);
   const table1 = new CompTable('#comp-table1', 4, 4);
 })();
+
+
+
