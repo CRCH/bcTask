@@ -126,7 +126,7 @@ class Table extends Component{
   }
   render(){
     return(
-      <div className="comp_table" onMouseOver={(e)=>this.mouseOver(e)} onMouseOut={(e)=>this.mouseOut(e)}>
+      <div className="comp_table" onMouseOver={(e)=>this.mouseOver(e)} onMouseOut={(e)=>this.mouseOut(e)} onTouchStart={(e)=>this.mouseOver(e)}>
         {this.state.dispR && 
         <div className={["block button_remove button_remrow",this.state.hiddenRow?"button_hidden":""].join(' ')} style ={{top: this.state.offTop}} onClick={this.remRow.bind(this)}></div>}
         {this.state.dispC && 
