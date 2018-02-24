@@ -107,6 +107,7 @@ class Table extends Component{
     this.setState({numRows: this.state.numRows,targ: 0,dispR:false})
   }
   mouseOver(e){
+    if(!e.target.className.includes("button_add")){    
     if(this.state.numCols > 1 ){
       this.setState({hiddenCol:false, dispC:true})
       
@@ -117,6 +118,7 @@ class Table extends Component{
     if(e.target.className === "block"){
     this.setState({offTop:e.target.offsetTop, offLeft: e.target.offsetLeft})
     }
+  }
 
   }
   mouseOut(e){
