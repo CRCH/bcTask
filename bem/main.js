@@ -1,12 +1,28 @@
 /* eslint-env browser */
-
-
 class CompTable {
   // @param: table-body-id selector for exmpl '#comp-table0'
-  clearTimeout() {
+  setMouseOverHandlers() {
     const arrObj = [this.tableBody, this.rowRemove, this.colRemove];
     arrObj.forEach((el) => {
       el.addEventListener('mouseover', () => clearTimeout(this.timeout));
+      el.addEventListener('mouseout', () => {
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.showRemoveButtons(false);
+        }, 500);
+      });
+    });
+    arrObj[0].addEventListener('mouseover', (event) => {
+      clearTimeout(this.timeout);
+      if (event.target.classList.contains('comp-table__block') &&
+        !event.target.classList.contains('comp-table__button--add')) {
+        this.showRemoveButtons(true);
+        const curTarg = event.target;
+        this.colRemove.style.left = `${curTarg.offsetLeft - 1}px`;
+        this.rowRemove.style.top = `${curTarg.offsetTop - 1}px`;
+        this.curX = Array.prototype.indexOf.call(curTarg.parentNode.childNodes, curTarg);
+        this.curY = Array.prototype.indexOf.call(curTarg.parentNode.parentNode.childNodes, curTarg.parentNode);
+      }
     });
   }
   setVars() {
@@ -44,28 +60,7 @@ class CompTable {
       }
     }
   }
-  setHandlers() {
-    this.tableBody.addEventListener('mouseover', (event) => {
-      clearTimeout(this.timeout);
-      if (event.target.classList.contains('comp-table__block') &&
-        !event.target.classList.contains('comp-table__button--add')) {
-        this.showRemoveButtons(true);
-        const curTarg = event.target;
-        this.colRemove.style.left = `${curTarg.offsetLeft - 1}px`;
-        this.rowRemove.style.top = `${curTarg.offsetTop - 1}px`;
-        this.curX = Array.prototype.indexOf.call(curTarg.parentNode.childNodes, curTarg);
-        this.curY = Array.prototype.indexOf.call(curTarg.parentNode.parentNode.childNodes, curTarg.parentNode);
-      }
-    });
-
-    this.tableBody.addEventListener('mouseout', () => {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        this.showRemoveButtons(false);
-      }, 500);
-    });
-
-
+  setClickHandlers() {
     this.colRemove.addEventListener('click', () => {
       this.colRemove.style.display = 'none';
       const target = this.curX;
@@ -101,7 +96,8 @@ class CompTable {
     this.table = document.currentScript.ownerDocument.querySelector(id);
     this.setVars();
     this.init();
-    this.setHandlers();
+    this.setClickHandlers();
+    this.setMouseOverHandlers();
   }
 }
 (() => {
