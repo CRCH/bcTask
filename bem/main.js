@@ -3,15 +3,13 @@
 
 class CompTable {
   // @param: table-body-id selector for exmpl '#comp-table0'
-  static addEventListeners(obj, ...arr) {
-    arr.forEach((el) => {
-      obj.addEventListener(el.event, el.fnc);
+  clearTimeout() {
+    const arrObj = [this.tableBody, this.rowRemove, this.colRemove];
+    arrObj.forEach((el) => {
+      el.addEventListener('mouseover', () => clearTimeout(this.timeout));
     });
   }
-  constructor(id, numRows, numCols) {
-    this.numRows = numRows;
-    this.numCols = numCols;
-    this.table = document.currentScript.ownerDocument.querySelector(id);
+  setVars() {
     this.rowRemove = this.table.querySelector('.comp-table__button--rem-row');
     this.colRemove = this.table.querySelector('.comp-table__button--rem-col');
     this.rowAdd = this.table.querySelector('.comp-table__button--add-row');
@@ -21,7 +19,23 @@ class CompTable {
     this.rowTpl.classList.add('comp-table__row');
     this.blockTpl = document.createElement('div');
     this.blockTpl.classList.add('comp-table__block');
-    let timeout;
+  }
+  showRemoveButtons(trig) {
+    if (trig) {
+      if (this.numRows > 1) {
+        this.rowRemove.classList.remove('comp-table__button--hidden');
+        this.rowRemove.style.display = 'block';
+      }
+      if (this.numCols > 1) {
+        this.colRemove.classList.remove('comp-table__button--hidden');
+        this.colRemove.style.display = 'block';
+      }
+    } else {
+      if (this.numRows > 1) this.rowRemove.classList.add('comp-table__button--hidden');
+      if (this.numCols > 1) this.colRemove.classList.add('comp-table__button--hidden');
+    }
+  }
+  init() {
     for (let i = 0; i < this.numRows; i += 1) {
       this.tableBody.appendChild(this.rowTpl.cloneNode());
       for (let j = 0; j < this.numCols; j += 1) {
@@ -29,96 +43,39 @@ class CompTable {
         tmp.appendChild(this.blockTpl.cloneNode());
       }
     }
-
+  }
+  setHandlers() {
     this.tableBody.addEventListener('mouseover', (event) => {
-      let curX;
-      let curY;
-      clearTimeout(timeout);
+      clearTimeout(this.timeout);
       if (event.target.classList.contains('comp-table__block') &&
         !event.target.classList.contains('comp-table__button--add')) {
-        if (this.numRows > 1) {
-          this.rowRemove.classList.remove('comp-table__button--hidden');
-          this.rowRemove.style.display = 'block';
-        }
-        if (this.numCols > 1) {
-          this.colRemove.classList.remove('comp-table__button--hidden');
-          this.colRemove.style.display = 'block';
-        }
+        this.showRemoveButtons(true);
         const curTarg = event.target;
-        for (let i = 0; i < curTarg.parentNode.children.length; i += 1) {
-          if (curTarg.parentNode.children[i] === curTarg) {
-            curY = i;
-          }
-        }
-        for (let i = 0; i < curTarg.parentNode.parentNode.children.length; i += 1) {
-          if (curTarg.parentNode.parentNode.children[i] === curTarg.parentNode) {
-            curX = i;
-          }
-        }
         this.colRemove.style.left = `${curTarg.offsetLeft - 1}px`;
         this.rowRemove.style.top = `${curTarg.offsetTop - 1}px`;
-        this.rowRemove.setAttribute('target', curY);
-        this.colRemove.setAttribute('target', curX);
+        this.curX = Array.prototype.indexOf.call(curTarg.parentNode.childNodes, curTarg);
+        this.curY = Array.prototype.indexOf.call(curTarg.parentNode.parentNode.childNodes, curTarg.parentNode);
       }
     });
 
-    CompTable.addEventListeners(this.tableBody, {
-      event: 'mouseout',
-      fnc: (e) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          if (this.numRows > 1) this.rowRemove.classList.add('comp-table__button--hidden');
-          if (this.numCols > 1) this.colRemove.classList.add('comp-table__button--hidden');
-        }, 500);
+    this.tableBody.addEventListener('mouseout', () => {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.showRemoveButtons(false);
+      }, 500);
+    });
 
-        if (this.tableBody.contains(e.relatedTarget)) {
-          clearTimeout(timeout);
-        }
-      },
-    });
-    CompTable.addEventListeners(this.colRemove, {
-      event: 'mouseover',
-      fnc: () => {
-        clearTimeout(timeout);
-      },
-    }, {
-      event: 'mouseout',
-      fnc: (event) => {
-        if (!this.tableBody.parentElement.contains(event.relatedTarget)) {
-          timeout = setTimeout(() => {
-            this.colRemove.classList.add('comp-table__button--hidden');
-            this.rowRemove.classList.add('comp-table__button--hidden');
-          }, 500);
-        }
-      },
-    });
-    CompTable.addEventListeners(this.rowRemove, {
-      event: 'mouseover',
-      fnc: () => {
-        clearTimeout(timeout);
-      },
-    }, {
-      event: 'mouseout',
-      fnc: (event) => {
-        if (!this.tableBody.parentElement.contains(event.relatedTarget)) {
-          timeout = setTimeout(() => {
-            this.colRemove.classList.add('comp-table__button--hidden');
-            this.rowRemove.classList.add('comp-table__button--hidden');
-          }, 500);
-        }
-      },
-    });
 
     this.colRemove.addEventListener('click', () => {
       this.colRemove.style.display = 'none';
-      const target = this.colRemove.getAttribute('target');
+      const target = this.curX;
       this.tableBody.querySelectorAll('.comp-table__row').forEach(x => x.children[target].remove());
       this.numCols -= 1;
     });
 
     this.rowRemove.addEventListener('click', () => {
       this.rowRemove.style.display = 'none';
-      const target = this.rowRemove.getAttribute('target');
+      const target = this.curY;
       this.tableBody.querySelectorAll('.comp-table__row')[target].remove();
       this.numRows -= 1;
     });
@@ -137,12 +94,18 @@ class CompTable {
       this.numRows += 1;
     });
   }
-}
 
+  constructor(id, numRows, numCols) {
+    this.numRows = numRows;
+    this.numCols = numCols;
+    this.table = document.currentScript.ownerDocument.querySelector(id);
+    this.setVars();
+    this.init();
+    this.setHandlers();
+  }
+}
 (() => {
   const table0 = new CompTable('#comp-table0', 4, 4);
   const table1 = new CompTable('#comp-table1', 4, 4);
 })();
-
-
 
