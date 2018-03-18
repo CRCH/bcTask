@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import Table from "./Table";
 import logo from './logo.svg';
-import './App.css';
+import styles from './App.css';
 
 class App extends Component {
   constructor() {
@@ -9,9 +8,8 @@ class App extends Component {
   }
   render() {
     return (
-      <div>
-        <Table />
-        <Table />
+      <div className={styles.block}>
+        
       </div>
     );
   }
