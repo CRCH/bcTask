@@ -4,10 +4,12 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "css-loader": "^0.28.11",
     "react": "^16.2.0",
     "react-css-modules": "^4.7.1",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
+    "react-scripts": "1.1.1",
+    "style-loader": "^0.20.3"
   },
   "scripts": {
     "start": "react-scripts start",
