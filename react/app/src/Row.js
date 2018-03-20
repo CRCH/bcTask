@@ -7,7 +7,12 @@ export default class Row extends Component {
     super(props);
     this.state = {
       unic: 0,
-      cells: [],
+      cells: [
+        <Block />,
+        <Block />,
+        <Block />,
+        <Block />,
+      ],
     };
   }
   componentWillReceiveProps(nextProps) {

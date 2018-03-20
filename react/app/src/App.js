@@ -1,18 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import styles from './App.css';
+import './App.css';
+import Row from './Row';
 
-class App extends Component {
-  constructor() {
-    super();
-  }
-  render() {
-    return (
-      <div className={styles.block}>
-        asd
-      </div>
-    );
-  }
-}
+const App = () => (
+  <Row />
+);
 
 export default App;
