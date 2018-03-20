@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import Row from './Row';
+import Table from './Table';
 
 const App = () => (
-  <Row />
+  <Table />
 );
 
 export default App;
